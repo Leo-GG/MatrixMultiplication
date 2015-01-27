@@ -43,7 +43,6 @@ import java.io.*;
 */
 public class multimat {
 	
-	private boolean trace_;
 	private Matrix[] matrices_;
 	private int[] dimensions_;
 	private int[][] minCosts_;
@@ -52,18 +51,22 @@ public class multimat {
 	private String parenthesis_;
 	private boolean[] printed_;
 	private Matrix resultMatrix_;
+	private boolean trace_;
+	private boolean writeToFile_;
+	private File outputFile_;
+	private PrintWriter writer_;
 
         /**
         * Constructor
         * @param inputMatrices Array de matrices leidas del fichero de entrada
         */
-	public multimat(Matrix[] inputMatrices) {
+	public multimat(Matrix[] inputMatrices,boolean trace,String outputFile) {
 		// Inicializa el array de matrices y el array con sus
 		// dimensiones
 		matrices_=inputMatrices;
 		dimensions_=new int[matrices_.length+1];
 		for (int i=0;i<matrices_.length;i++){
-			//Ai=d[i]xd[i+1]
+			//Ai tiene dimensiones d[i]xd[i+1]
 			dimensions_[i]=matrices_[i].getM(); 
 		}
 		dimensions_[matrices_.length]=
@@ -73,15 +76,35 @@ public class multimat {
 		printed_=new boolean[matrices_.length];
 		// Matriz resultado
 		Matrix finalProduct;
-		
+
+		// Abre el fichero de salida si es necesario
+		if (outputFile!=null){
+		        outputFile_= new File(outputFile);
+			writeToFile_=true;
+		        try {
+				writer_= new PrintWriter(outputFile_,"UTF-8"); 
+			}catch ( IOException e ) {
+          			 e.printStackTrace();
+			}
+		}
+		else{
+			 writeToFile_=false;
+		}
+
+		// Lee la opción traza 
+		trace_=trace;
+		printTraceStart();
+
 		// Establece el orden óptimo de multiplicación
 		orderMatrices();
 		// Modifica el string de la asociación basado en el resultado
 		// óptimo
-		findParenthesis(0,matrices_.length-1);	
+		genParenthesis(0,matrices_.length-1);	
 		// Realiza la multiplicación
 		finalProduct=(findProduct(0,matrices_.length-1));
+		printTraceEnd();
 		printOutput(finalProduct);
+
 
 	}
 
@@ -102,6 +125,9 @@ public class multimat {
 		// Multiplicar subgrupos de 1 elemento tiene coste 0		
 		for (int i=0; i<n;i++){
 			minCosts_[i][i]=0;
+			for (int j=0; j<n;j++){
+				optMidPoints_[i][j]=-1;
+			}
 		}
 		// Para subgrupos de tamaño 2 hasta n-1
 		for (int l=1;l<n;l++){
@@ -123,10 +149,13 @@ public class multimat {
 						optMidPoints_[i][j]=k;
 					}
 				}
+				if (trace_) printTrace();
 			}
 		}
 	}
 	
+
+
         /**
         * Modifica el string que indica la asociación óptima de cualquier
 	* subgrupo de matrices de la lista (manteniendo el orden), incluyendo
@@ -140,18 +169,18 @@ public class multimat {
 	* @param i Indica el elemento inicial del subgrupo
 	* @param j Indica el elemento final del subgrupo
         */
-	public void findParenthesis(int i, int j){
+	public void genParenthesis(int i, int j){
 		//Si solo hay un elemento no se hace nada
 		if (i!=j){
 			parenthesis_+="(";
 			// Llamada recursiva para la parte izquierda
 			// (desde i hasta k)
-			findParenthesis(i,optMidPoints_[i][j]);
+			genParenthesis(i,optMidPoints_[i][j]);
 			String iStr= printed_[i] ? "" : "M"+i;	
 			parenthesis_+=(iStr + " x ");
 			// Llamada recursiva para la parte derecha
 			// (desde k+1 hasta j)		
-			findParenthesis(optMidPoints_[i][j]+1,j);
+			genParenthesis(optMidPoints_[i][j]+1,j);
 			String jStr= printed_[j] ? "" : "M"+j;
 			parenthesis_+=(jStr+")");
 			// Marca i y j como ya impresos
@@ -176,7 +205,9 @@ public class multimat {
 				return multiply(matrices_[i],matrices_[j]);
 			}
 			else{
-				return multiply(findProduct(i,optMidPoints_[i][j]),findProduct(optMidPoints_[i][j]+1,j));
+				return multiply(
+					findProduct(i,optMidPoints_[i][j]),
+					findProduct(optMidPoints_[i][j]+1,j));
 			}
 		}	
 		return matrices_[i];
@@ -194,8 +225,8 @@ public class multimat {
 		int N = A.getN();
 		int P = B.getN();
 		if(N != B.getM()){ 
-			throw new NullPointerException(
-			"Trying to multiply matrices with invalid dimensions");
+			throw new IllegalArgumentException(
+			"Las dimensiones de las matrices no son validas");
 		}
 		float[][] valsA=A.getValues();
 		float[][] valsB=B.getValues();
@@ -203,7 +234,7 @@ public class multimat {
 		for(int i=0;i<M;i++){
 			for(int j=0;j<P;j++){
 				for(int k=0;k<N;k++){
-					valsC[i][j] += valsA[i][k] * valsB[k][j];
+					valsC[i][j]+=valsA[i][k]*valsB[k][j];
 				}
 			}
 		}
@@ -225,8 +256,15 @@ public class multimat {
 				s+=(values[i][j]+" ");
 			}
 			s+="\n";
+
 		}
-		System.out.print(s);
+		if (writeToFile_){
+			writer_.print(s);
+		}
+
+		else{
+			System.out.print(s);
+		}
 	}
         /**
 	* Imprime el resultado final del programa en el formato especificado:
@@ -236,11 +274,86 @@ public class multimat {
 	* @param finalProduct Matriz resultado
 	*/
 	private void printOutput(Matrix finalProduct){
-		System.out.println("Asociación: "+parenthesis_);
-		totalOps_=minCosts_[0][matrices_.length-1];	
-		System.out.println("Operaciones: "+totalOps_);
-		System.out.println(finalProduct.getM()+" "+finalProduct.getN());
-		printMatrix(finalProduct);
+		totalOps_=minCosts_[0][matrices_.length-1];
+			if (writeToFile_){
+				writer_.print("Asociación: "+
+						parenthesis_+"\n");
+				writer_.print("Operaciones: "+
+						totalOps_+"\n");
+				writer_.print(finalProduct.getM()+
+						" "+finalProduct.getN()+"\n");
+				printMatrix(finalProduct);
+				writer_.close();
+			}
+			else{
+				System.out.println("Asociación: "+
+							parenthesis_);	
+				System.out.println("Operaciones: "+
+								totalOps_);
+				System.out.println(finalProduct.getM()+
+						" "+finalProduct.getN());
+				printMatrix(finalProduct);
+			}	
+	}
+
+        /**
+        * Imprime la traza del calculo. Este metodo es llamado cada vez que
+	* se encuentra el valor k ótimo para un nuevo par de matrices i,j.
+	* Imprime unicamente los valores de la diagonal superior, llenando
+	* el resto de la matriz con la cadena "--". Los valores desconocidos
+	* hasta el momento se indican con la cadena "??"
+	*/
+	private void printTrace(){
+		String s=new String("");
+		for (int i=0; i<matrices_.length;i++){
+			for (int j=0;j<=i;j++){
+				s+=("-- ");
+			}
+			for (int j=i+1;j<matrices_.length;j++){
+				if (optMidPoints_[i][j]==-1){
+					s+=("?? ");
+				}
+				else{
+					s+=("M"+optMidPoints_[i][j]+" ");
+				}
+			}
+			s+=("\n");
+		}
+		s+=("\n");
+		if (writeToFile_){
+			writer_.print(s);
+		}
+		else{
+			System.out.print(s);
+		}
+	}
+
+        /**
+        * Imprime el comienzo de la traza
+	*/
+	private void printTraceStart(){
+		if (trace_){						
+			if (writeToFile_){
+				writer_.print("Traza:\n");
+			}
+			else{
+				System.out.print("Traza:\n");
+			}
+		}
+	}
+
+        /**
+        * Imprime el final de la traza
+	*/
+	private void printTraceEnd(){
+		if (trace_){						
+			if (writeToFile_){
+				writer_.print("Fin de traza\n\n");
+			}
+			else{
+				System.out.print("Fin de traza\n\n");
+			}
+		}
 	}
 
         /**
@@ -255,6 +368,8 @@ public class multimat {
 	public static void main(String[] args) {
 		InputHandler IHandler = new InputHandler(args);
 		Matrix[] inputMatrices=IHandler.getMatrices();
-		multimat solver = new multimat(inputMatrices);		
+		boolean trace=IHandler.getTrace();
+		String outputFile=IHandler.getOutFile();
+		multimat solver = new multimat(inputMatrices,trace,outputFile);		
 	}
 }

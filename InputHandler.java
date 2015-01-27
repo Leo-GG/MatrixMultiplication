@@ -21,11 +21,44 @@ public class InputHandler {
 
 	private Matrix[] matrices_;
 	private boolean trace_;
-	private boolean showHelp_;	
+	private boolean help_;
+	private String inputFile_,outputFile_;	
 	
 	public InputHandler(String[] args) {
-		String inputFile=args[0];
-		readFile(inputFile);
+		if (args.length>4){
+			throw new IllegalArgumentException(
+				"Demasiados argumentos (>4)!");
+		}
+		
+		int nOptions=0;
+		int nArguments=args.length;
+
+		for (int i=0;i<args.length;i++){
+			if (args[i].equals("-h")){
+				help_=true;
+				showHelp();
+				System.exit(0);
+			}
+			if (args[i].equals("-t")){
+				trace_=true;
+				nOptions++;
+			}
+		}
+
+		nArguments=args.length-nOptions;
+		if (nArguments>2){
+			throw new IllegalArgumentException(
+				"Argumentos invalidos");
+		}
+		inputFile_=args[nOptions];
+		outputFile_=null;
+		if (nArguments==2){
+			outputFile_=args[nOptions+1];
+			testOutput();
+		}
+
+		testInput();
+		readFile(inputFile_);
 	}		
 
         /**
@@ -62,6 +95,7 @@ public class InputHandler {
 				matricesList[i]=new Matrix(matrixValues,M,N);
 			}
 			matrices_=matricesList;
+			checkMatrices();
  		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -76,10 +110,82 @@ public class InputHandler {
 	}
 
         /**
+	* Comprueba que las matrices de entrada se puedan multiplicar
+        */
+	public void checkMatrices(){
+		for (int i=0;i<matrices_.length-1;i++){
+			if (matrices_[i].getN()!=matrices_[i+1].getM()){
+				throw new IllegalArgumentException(
+				"Las dimensiones de las matrices no "+
+				"son validas");
+			}
+		}
+	}				
+
+        /**
+	* Comprueba que el fichero de entrada exista y que no sea un directorio
+        */
+	public void testInput(){
+		File f = new File(inputFile_);
+			if(!f.exists() || f.isDirectory()){
+				throw new IllegalArgumentException(
+				"El fichero de entrada no existe");
+			}
+	}
+
+        /**
+	* Comprueba que el fichero de salida no exista y que no sea un 
+	* directorio
+        */
+	public void testOutput(){
+		File f = new File(outputFile_);
+			if(f.exists() && !f.isDirectory()){
+				throw new IllegalArgumentException(				
+				"El fichero de salida ya existe");
+			}
+	}
+
+        /**
         * Devuelve el vector con las matrices leidas del fichero de entrada
 	* @return matrices Vector de matrices  
         */
 	public Matrix[] getMatrices(){
 		return matrices_;
+	}
+
+        /**
+        * Devuelve el estado de la opcion traza
+	* @return trace
+        */
+	public boolean getTrace(){
+		return trace_;
+	}
+
+        /**
+        * Devuelve el estado de la opcion ayuda
+	* @return help
+        */
+	public boolean getHelp(){
+		return help_;
+	}
+
+        /**
+        * Devuelve el nombre del fichero de salida
+	* @return outputFile
+        */
+	public String getOutFile(){
+		return outputFile_;
+	}
+
+        /**
+        * Muestra la ayuda del programa
+        */
+	public void showHelp(){
+		System.out.print("\nSINTAXIS:\n");
+		System.out.print("multimat [-t] [-h] [fichero_entrada] [fichero_salida]\n");
+		System.out.print("-t\t\tTraza la selección del orden de multiplicación\n");
+		System.out.print("-h\t\tMuestra esta ayuda\n");
+		System.out.print("fichero_entrada\tNombre del fichero de entrada\n");
+		System.out.print("fichero_salida\tNombre del fichero de salida\n\n");
 	}
 }

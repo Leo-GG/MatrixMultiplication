@@ -1,0 +1,129 @@
+\hypertarget{classmultimat}{\section{multimat \-Class \-Reference}
+\label{dd/dc8/classmultimat}\index{multimat@{multimat}}
+}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classmultimat_a2c6764a88db29e40ee8e3fcae62624ab}{multimat} (\hyperlink{classMatrix}{\-Matrix}\mbox{[}$\,$\mbox{]} input\-Matrices, boolean trace, \-String output\-File)
+\item 
+void \hyperlink{classmultimat_aa27b1cb5d03fa9018afdc4a6f97fd083}{order\-Matrices} ()
+\item 
+void \hyperlink{classmultimat_a31d418c7baa4664d0b2b9aee8a56d0ec}{gen\-Parenthesis} (int i, int j)
+\item 
+\hyperlink{classMatrix}{\-Matrix} \hyperlink{classmultimat_a2b2afedbe220600fe1b27352124d7469}{find\-Product} (int i, int j)
+\end{DoxyCompactItemize}
+\subsection*{\-Static \-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{classmultimat_a0eae78cf845720d17410c4f2389b7401}{main} (\-String\mbox{[}$\,$\mbox{]} args)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Clase que contiene los métodos para encontrar el orden óptimo de multiplicación 
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{classmultimat_a2c6764a88db29e40ee8e3fcae62624ab}{\index{multimat@{multimat}!multimat@{multimat}}
+\index{multimat@{multimat}!multimat@{multimat}}
+\subsubsection[{multimat}]{\setlength{\rightskip}{0pt plus 5cm}{\bf multimat.\-multimat} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Matrix}\mbox{[}$\,$\mbox{]}}]{input\-Matrices, }
+\item[{boolean}]{trace, }
+\item[{\-String}]{output\-File}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{dd/dc8/classmultimat_a2c6764a88db29e40ee8e3fcae62624ab}
+\-Constructor 
+\begin{DoxyParams}{\-Parameters}
+{\em input\-Matrices} & \-Array de matrices leidas del fichero de entrada \\
+\hline
+\end{DoxyParams}
+
+
+\-Here is the call graph for this function\-:
+
+
+
+
+\-Here is the caller graph for this function\-:
+
+
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{classmultimat_a2b2afedbe220600fe1b27352124d7469}{\index{multimat@{multimat}!find\-Product@{find\-Product}}
+\index{find\-Product@{find\-Product}!multimat@{multimat}}
+\subsubsection[{find\-Product}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Matrix} {\bf multimat.\-find\-Product} (
+\begin{DoxyParamCaption}
+\item[{int}]{i, }
+\item[{int}]{j}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{dd/dc8/classmultimat_a2b2afedbe220600fe1b27352124d7469}
+\-Realiza la multiplicación de cualquier subgrupo de matrices de la lista (manteniendo el orden), incluyendo la lista completa y siguiendo la asociación óptima. \-Divide el grupo según el valor de k y hace llamadas recursivas para multiplicar cada uno de los elementos resultantes (i,k y k+1,j). 
+\begin{DoxyParams}{\-Parameters}
+{\em i} & \-Indica el elemento inicial del subgrupo \\
+\hline
+{\em j} & \-Indica el elemento final del subgrupo \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\-C \-Matriz resultado 
+\end{DoxyReturn}
+
+
+\-Here is the caller graph for this function\-:
+
+
+\hypertarget{classmultimat_a31d418c7baa4664d0b2b9aee8a56d0ec}{\index{multimat@{multimat}!gen\-Parenthesis@{gen\-Parenthesis}}
+\index{gen\-Parenthesis@{gen\-Parenthesis}!multimat@{multimat}}
+\subsubsection[{gen\-Parenthesis}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf multimat.\-gen\-Parenthesis} (
+\begin{DoxyParamCaption}
+\item[{int}]{i, }
+\item[{int}]{j}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{dd/dc8/classmultimat_a31d418c7baa4664d0b2b9aee8a56d0ec}
+\-Modifica el string que indica la asociación óptima de cualquier subgrupo de matrices de la lista (manteniendo el orden), incluyendo la lista completa. \-Se basa en las mátrices de coste óptimo y valores óptimo de k. \-Para cada par i,j escribe un paréntesis izquierdo, haces dos llamadas recursivas para imprimir los parentesis de los conjuntos entre i y k y entre k+1 y j y finalmente escribe un parentesis izquierdo. \-Usa un vector de booleans para asegurar que no se incluye dos veces la misma matriz 
+\begin{DoxyParams}{\-Parameters}
+{\em i} & \-Indica el elemento inicial del subgrupo \\
+\hline
+{\em j} & \-Indica el elemento final del subgrupo \\
+\hline
+\end{DoxyParams}
+
+
+\-Here is the caller graph for this function\-:
+
+
+\hypertarget{classmultimat_a0eae78cf845720d17410c4f2389b7401}{\index{multimat@{multimat}!main@{main}}
+\index{main@{main}!multimat@{multimat}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf multimat.\-main} (
+\begin{DoxyParamCaption}
+\item[{\-String\mbox{[}$\,$\mbox{]}}]{args}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{dd/dc8/classmultimat_a0eae78cf845720d17410c4f2389b7401}
+\-Programa principal. \-Crea una instancia del lector de datos de entrada, con los argumentos del programa y recibe de este la lista de matrices entrada y el estado de la opción traza. \-Crea una instancia de multimat con la lista de matrices de entrada y el valor de la opción traza e invoca sus métodos para calcular la solución del problema y generar los datos de salida. 
+\begin{DoxyParams}{\-Parameters}
+{\em args} & \-Argumentos con los que se ha ejecutado el programa \\
+\hline
+\end{DoxyParams}
+
+
+\-Here is the call graph for this function\-:
+
+
+\hypertarget{classmultimat_aa27b1cb5d03fa9018afdc4a6f97fd083}{\index{multimat@{multimat}!order\-Matrices@{order\-Matrices}}
+\index{order\-Matrices@{order\-Matrices}!multimat@{multimat}}
+\subsubsection[{order\-Matrices}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf multimat.\-order\-Matrices} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{dd/dc8/classmultimat_aa27b1cb5d03fa9018afdc4a6f97fd083}
+\-Calcula el coste mínimo para la multiplicación de cualquier subgrupo de matrices de la lista (manteniendo el orden) y la matriz k que divide el subgrupo produciendo dicho coste. \-El cálculo de realiza incrementando secuencialmente el tamaño de los subgrupos, calculando en última instancia el coste mínimo y la matriz k para la lista completa, lo que genera la solución buscada. 
+
+\-Here is the caller graph for this function\-:
+
+
+
+
+\-The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{multimat_8java}{multimat.\-java}\end{DoxyCompactItemize}
